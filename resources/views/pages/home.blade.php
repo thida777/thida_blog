@@ -3,7 +3,7 @@
 @section('title', 'Home | Thida Blog')
 
 @section('content')
-    <div class="p-5 mb-4 bg-light rounded-3">
+    <div class="hero-section p-5 mb-4">
         <div class="container-fluid py-4">
             <h1 class="display-5 fw-bold">Welcome to Thida Blog</h1>
             <p class="col-md-8 fs-4">
@@ -19,7 +19,7 @@
     <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
         @forelse ($posts as $post)
             <div class="col">
-                <div class="card h-100">
+                <div class="card post-card h-100">
                     @if (!empty($post->image))
                         <img src="{{ asset('storage/' . $post->image) }}" class="card-img-top" alt="{{ $post->title }}">
                     @endif

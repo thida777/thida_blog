@@ -15,7 +15,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.categories.update', $category) }}">
+    <form method="POST" action="{{ route('admin.categories.update', $category) }}" class="card p-4">
         @csrf
         @method('PUT')
 

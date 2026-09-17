@@ -5,7 +5,7 @@
 @section('content')
     <a href="{{ route('blog.index') }}" class="btn btn-link ps-0 mb-3">&larr; Back to Blog</a>
 
-    <article>
+    <article class="article-content">
         <h1 class="mb-2">{{ $post->title }}</h1>
 
         <div class="text-muted mb-3">

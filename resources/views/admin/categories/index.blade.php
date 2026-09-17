@@ -20,7 +20,8 @@
         </div>
     @endif
 
-    <table class="table table-bordered table-striped align-middle">
+    <div class="table-responsive card p-3">
+    <table class="table table-bordered table-striped align-middle mb-0">
         <thead>
             <tr>
                 <th>ID</th>
@@ -54,4 +55,5 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 @endsection

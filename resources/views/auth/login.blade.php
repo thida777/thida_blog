@@ -5,6 +5,7 @@
 @section('content')
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
+          <div class="card p-4 p-md-5">
             <h1 class="mb-4">Admin Login</h1>
 
             @if (session('error'))
@@ -52,6 +53,7 @@
 
                 <button type="submit" class="btn btn-primary w-100">Log In</button>
             </form>
+          </div>
         </div>
     </div>
 @endsection
