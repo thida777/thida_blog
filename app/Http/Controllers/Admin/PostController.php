@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +14,7 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::with(['category', 'user'])
+        $posts = Post::with(['category', 'user', 'tags'])
             ->latest()
             ->paginate(10);
 
@@ -23,8 +24,9 @@ class PostController extends Controller
     public function create()
     {
         $categories = Category::all();
+        $tags = Tag::with('category')->orderBy('name')->get();
 
-        return view('admin.posts.create', ['categories' => $categories]);
+        return view('admin.posts.create', ['categories' => $categories, 'tags' => $tags]);
     }
 
     public function store(Request $request)
@@ -34,6 +36,8 @@ class PostController extends Controller
             'content' => ['required', 'string'],
             'category_id' => ['required', 'exists:categories,id'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['exists:tags,id'],
         ]);
 
         $validated['user_id'] = Auth::id();
@@ -42,7 +46,11 @@ class PostController extends Controller
             $validated['image'] = $request->file('image')->store('posts', 'public');
         }
 
-        Post::create($validated);
+        $tagIds = $validated['tags'] ?? [];
+        unset($validated['tags']);
+
+        $post = Post::create($validated);
+        $post->tags()->sync($tagIds);
 
         return redirect()
             ->route('admin.posts.index')
@@ -51,7 +59,7 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
-        $post->load(['category', 'user']);
+        $post->load(['category', 'user', 'tags']);
 
         return view('admin.posts.show', ['post' => $post]);
     }
@@ -59,8 +67,10 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         $categories = Category::all();
+        $tags = Tag::with('category')->orderBy('name')->get();
+        $post->load('tags');
 
-        return view('admin.posts.edit', ['post' => $post, 'categories' => $categories]);
+        return view('admin.posts.edit', ['post' => $post, 'categories' => $categories, 'tags' => $tags]);
     }
 
     public function update(Request $request, Post $post)
@@ -70,6 +80,8 @@ class PostController extends Controller
             'content' => ['required', 'string'],
             'category_id' => ['required', 'exists:categories,id'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['exists:tags,id'],
         ]);
 
         if ($request->hasFile('image')) {
@@ -82,7 +94,11 @@ class PostController extends Controller
             $validated['image'] = $post->image;
         }
 
+        $tagIds = $validated['tags'] ?? [];
+        unset($validated['tags']);
+
         $post->update($validated);
+        $post->tags()->sync($tagIds);
 
         return redirect()
             ->route('admin.posts.index')
